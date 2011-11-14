@@ -6,7 +6,8 @@ class Config(object):
     LOGFILE = 'stacktrace.log'
     JSONfile = False
     AUTHPASS = "httppassword"
-    DNSFILE = "/home/olav/backupbay.com"
+    ZONEFILE = "/home/olav/example.org"
+    DBFILE = "zones.db"
 
 class ProductionConfig(Config):
     pass
