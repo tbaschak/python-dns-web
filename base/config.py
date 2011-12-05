@@ -4,9 +4,9 @@ class Config(object):
     HOST = "0.0.0.0"
     PORT = 8080
     LOGFILE = 'stacktrace.log'
-    JSONfile = False
+    JSONfile = True
     AUTHPASS = "httppassword"
-    ZONEFILE = "/home/olav/example.org"
+    ZONEFILE = "example.org"
     DBFILE = "zones.db"
 
 class ProductionConfig(Config):
@@ -14,7 +14,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    JSONfile = True
+    JSONfile = False
 
 class TestingConfig(Config):
     TESTING = True

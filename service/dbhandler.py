@@ -9,12 +9,12 @@ class DBHandler:
         self.cursor = self.connection.cursor()
         self.execute("""
             create table if not exists
-            zones(name varchar, ipaddress varchar)
+            zones(name varchar, ip varchar, updated boolean)
         """)
             
     def __del__(self):
         self.connection.close()
-        #log.debug("HEY DELETED",__name__)
+        log.debug("HEY DELETED",__name__)
         
     def getConnection(self):
         return self.connection
@@ -25,3 +25,12 @@ class DBHandler:
     def execute(self, query):
         self.cursor.execute(query)
         self.connection.commit()
+        
+    def exists(self, table, column, value):
+        self.execute("""
+            SELECT 1 FROM %s WHERE %s LIKE '%s'
+        """%(table,column,value))
+        for row in self.cursor:
+            if row[0] == 1:
+                return True
+        return False
