@@ -25,6 +25,13 @@ class Log:
         Base.app.logger.debug(args[0])
         Base.app.logger_name = Base.__name__.split('.')[0]
         
+    @staticmethod
+    def exception(*args):
+        if len(args) == 2:
+            Base.app.logger_name = args[1]
+        Base.app.logger.exception(args[0])
+        Base.app.logger_name = Base.__name__.split('.')[0]
+        
 class Messages:
     
     def __init__(self):
