@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 The MIT License (MIT)
 
@@ -27,6 +28,8 @@ import logging
 from service.kronos import ThreadedScheduler
 from service.kronos import method
 from service.dnshandler import DNSHandler
+import unittest
+from test.dns_test import DNSTest
 
 for controller in os.listdir(os.getcwd()+"/controllers"):
     module_name, ext = os.path.splitext(controller)
@@ -35,31 +38,37 @@ for controller in os.listdir(os.getcwd()+"/controllers"):
 
 class MainApplication:
     @staticmethod
-    def run():
+    def start():
         if len(sys.argv) > 1:
             if sys.argv[1] == ("dev"):
                 app.config.from_object('base.config.DevelopmentConfig')
             elif sys.argv[1] == "test":
                 app.config.from_object('base.config.TestingConfig')
+                suite = unittest.TestLoader().loadTestsFromTestCase(DNSTest)
+                unittest.TextTestRunner(verbosity=2).run(suite)
+                return 0
+                
         if len(sys.argv) == 1 or sys.argv[1] == "prod" or None:
             app.config.from_object('base.config.ProductionConfig')
         logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)
+        # start job
         MainApplication.initJob1()
         app.run(
             app.config["HOST"],
             app.config["PORT"]
         )
         
+    
     @staticmethod
     def initJob1():
         dnshandler = DNSHandler()
         job = ThreadedScheduler()
         job.add_interval_task(
-            dnshandler.updateZoneFile, "job1",
+            dnshandler.zonefileJob, "job1",
             0, 30, method.threaded, None, None)
         job.start()
 
 if __name__ == "__main__":
-    MainApplication.run()
+    MainApplication.start()
 
 

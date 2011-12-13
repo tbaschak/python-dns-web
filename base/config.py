@@ -8,6 +8,8 @@ class Config(object):
     AUTHPASS = "httppassword"
     ZONEFILE = "example.org"
     DBFILE = "zones.db"
+    ZONES_START_POINT = ";zones start"
+    ZONES_END_POINT = ";zones end"
 
 class ProductionConfig(Config):
     pass

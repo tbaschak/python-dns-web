@@ -1,6 +1,5 @@
 
 from pysqlite2 import dbapi2 as sqlite3
-from base import app, log
 
 class DBHandler:
     
@@ -10,7 +9,12 @@ class DBHandler:
         self.connection.row_factory = sqlite3.Row
         self.execute("""
             create table if not exists
-            zones(name varchar, ip varchar, updated boolean)
+            zones(
+                name varchar NOT NULL,
+                ip varchar NOT NULL,
+                updated boolean NOT NULL,
+                update_type varchar
+            )
         """)
             
     def __del__(self):

@@ -4,7 +4,7 @@ from config import Config
 
 class Base:
     app = Flask(__name__.split('.')[0])
-    
+    db = None
     @staticmethod
     def asJSON(data):
         if Config.JSONfile is True:

@@ -1,18 +1,21 @@
 
 from base import app, log
-from dbhandler import DBHandler
 from model.zoneentry import ZoneEntry
-
+from service.dbhandler import DBHandler
 import traceback
 
 class DNSHandler:
     
     def __init__(self):
-        self.zonefile = open(app.config["ZONEFILE"],"r")
-        self.lines = self.zonefile.readlines()
+        self.zonefile = None
         
     def __del__(self):
-        self.zonefile.close()
+        if self.zonefile is not None:
+            self.zonefile.close()
+        
+    def readZonefile(self):
+        self.zonefile = open(app.config["ZONEFILE"],"r")
+        self.lines = self.zonefile.readlines()
         
     def add(self, ip, name):
         data = {}
@@ -23,9 +26,9 @@ class DNSHandler:
             data["success"] = False
         else:
             if db.execute("""
-                INSERT INTO zones(name,ip,updated)
-                VALUES('%s','%s',1)
-                       """%(name,ip)):
+                INSERT INTO zones(name,ip,updated,update_type)
+                VALUES('?','?',1,'CREATE')
+                       """,[name,ip]):
                 data["success"] = True
                 data["message"] = u"Entry %s inserted"%(name)
             else:
@@ -50,7 +53,9 @@ class DNSHandler:
             return data
         try:
             c.execute("""
-                UPDATE zones SET name = ?, updated = 1 WHERE ip LIKE ?
+                UPDATE zones
+                SET name = ?, updated = 1, update_type = 'MODIFIED NAME'
+                WHERE ip LIKE ?
                 """,[name, ip])
             db.commit()
             data["success"] = True
@@ -75,7 +80,9 @@ class DNSHandler:
             return data
         try:
             c.execute("""
-                UPDATE zones SET ip = ?, updated = 1 WHERE name LIKE ?
+                UPDATE zones
+                SET ip = ?, updated = 1, update_type = 'MODIFIED IP'
+                WHERE name LIKE ?
                 """,[ip,name])
             db.commit()
             data["success"] = True
@@ -98,7 +105,9 @@ class DNSHandler:
         if zone[0] == name:
             try:
                 c.execute("""
-                    DELETE FROM zones WHERE name LIKE ?
+                    UPDATE zones
+                    SET update_type = 'DELETE'
+                    WHERE name LIKE ?
                     """,[name])
                 db.commit()
                 data["success"] = True
@@ -118,23 +127,44 @@ class DNSHandler:
         data = []
         printLines = False
         for line in self.lines:
-            if line.find(";Aliases") >= 0:
+            if line.find(app.config["ZONES_END_POINT"]) >= 0:
                 printLines = False
             if printLines:
                 zsplit = line.split()
                 if len(zsplit) == 4:
                     data.append(ZoneEntry(zsplit[0],zsplit[3]))
-            if line.find(";Machine Names") >= 0:
+            if line.find(app.config["ZONES_START_POINT"]) >= 0:
                 printLines = True
         return data
         
     def getEntryByName(self, name):
         return data
     
-    def updateZoneFile(self):
-        #db = DBHandler(app.config["DBFILE"])
-        #del(db)
+    def zonefileJob(self):
+        db = DBHandler(app.config["DBFILE"])
+        c = db.getCursor()
+        results = list(c.execute("""
+            SELECT name, ip FROM zones
+            WHERE updated = 1
+            """,[]))
+        if len(results) > 0:
+            self.updateZonefile(results)
         pass
+    
+    def updateZonefile(self, results):
+        self.readZonefile()
+        zones = self.getAllEntries()
+        for zone in zones:
+            #print zone.name
+            #print zone.ip
+            pass
+        for row in results:
+            # Check if name exists
+            
+            pass
+            # Should ip be changed?
+            
+            # Add entry
         
     def getSerial(self):
         serial = [";Serial", "; Serial"]
@@ -143,3 +173,5 @@ class DNSHandler:
                 if line.find(s) or line.find(s.lower) or line.find(s.upper):
                     print line
                     return line
+                
+                
