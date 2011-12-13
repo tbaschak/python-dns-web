@@ -24,7 +24,7 @@ class DNSController:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
             dns = DNSHandler()
-            data = dns.add(ip, name)
+            data = dns.add(name, ip)
         else:
             data["errors"] = msgs
         if data.has_key("error") or data.has_key("errors"):
@@ -35,15 +35,15 @@ class DNSController:
     def editName():
         data = {}
         msgs = Messages()
-        ip = request.args.get('ip')
-        if not ip:
+        fromName = request.args.get('from')
+        if not fromName:
             msgs.add(u"no ip address supplied")
-        name = request.args.get('name')
-        if not name:
+        toName = request.args.get('to')
+        if not toName:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
             dns = DNSHandler()
-            data = dns.editName(name, ip)
+            data = dns.editName(fromName, toName)
         else:
             data["errors"] = msgs
         if data.has_key("error") or data.has_key("errors"):

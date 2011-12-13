@@ -44,10 +44,12 @@ class MainApplication:
                 app.config.from_object('base.config.DevelopmentConfig')
             elif sys.argv[1] == "test":
                 app.config.from_object('base.config.TestingConfig')
+                # Delete db if it exists
+                if os.path.isfile(app.config["DBFILE"]):
+                    os.remove(app.config["DBFILE"])
                 suite = unittest.TestLoader().loadTestsFromTestCase(DNSTest)
                 unittest.TextTestRunner(verbosity=2).run(suite)
-                return 0
-                
+                return 1
         if len(sys.argv) == 1 or sys.argv[1] == "prod" or None:
             app.config.from_object('base.config.ProductionConfig')
         logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)

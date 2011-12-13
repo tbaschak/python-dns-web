@@ -17,51 +17,57 @@ class DNSHandler:
         self.zonefile = open(app.config["ZONEFILE"],"r")
         self.lines = self.zonefile.readlines()
         
-    def add(self, ip, name):
+    def add(self, name, ip):
         data = {}
         # Check if name exists
         db = DBHandler(app.config["DBFILE"])
+        c = db.getCursor()
         if db.exists("zones", "name", name):
             data["error"] = u"Duplicate name entry in db"
             data["success"] = False
         else:
-            if db.execute("""
-                INSERT INTO zones(name,ip,updated,update_type)
-                VALUES('?','?',1,'CREATE')
-                       """,[name,ip]):
+            try:
+                c.execute("""
+                    INSERT INTO zones(name,ip,updated,update_type)
+                    VALUES(?,?,1,'CREATE')
+                           """,[name,ip])
+                db.commit()
                 data["success"] = True
                 data["message"] = u"Entry %s inserted"%(name)
-            else:
+            except Exception, e:
+                errormsg = u"Unsuccessful database insert transaction:" + e
+                log.exception(errormsg, self.__class__.__name__)
                 data["success"] = False
-                data["error"] = u"Unsuccessful database insert transaction"
+                data["error"] = errormsg
         return data
     
-    def editName(self, name, ip):
+    def editName(self, fromName, toName):
         data = {}
+        if fromName == toName:
+            data["error"] = u"Name entry is the same as existing name"
+            data["success"] = False
+            return data
         db = DBHandler(app.config["DBFILE"])
         c = db.getCursor()
-        zone = list(c.execute("""
-            SELECT name FROM zones
-            WHERE ip LIKE ?
-            """,[ip]))[0]
-        if zone[0] == name:
-            data["error"] = u"Name entry is the same as existing name"
-            return data
-        if db.exists("zones", "name", name):
+        if db.exists("zones", "name", toName):
             data["error"] = u"Duplicate name entry in db"
+            data["success"] = False
+            return data
+        if not db.exists("zones", "name", fromName):
+            data["error"] = u"No old name entry in db"
             data["success"] = False
             return data
         try:
             c.execute("""
                 UPDATE zones
                 SET name = ?, updated = 1, update_type = 'MODIFIED NAME'
-                WHERE ip LIKE ?
-                """,[name, ip])
+                WHERE name LIKE ?
+                """,[toName, fromName])
             db.commit()
             data["success"] = True
-            data["message"] = u"Entry %s updated from %s"%(name, zone[0])
+            data["message"] = u"Entry %s updated from %s"%(toName, fromName)
         except Exception, e:
-            errormsg = u"Unsuccessful database update transaction"
+            errormsg = u"Unsuccessful database update transaction:" + e
             log.exception(errormsg, self.__class__.__name__)
             data["success"] = False
             data["error"] = errormsg
@@ -77,6 +83,7 @@ class DNSHandler:
             """,[name]))[0]
         if zone[0] == ip:
             data["error"] = u"Ip entry is the same as existing name"
+            data["success"] = False
             return data
         try:
             c.execute("""
@@ -88,7 +95,7 @@ class DNSHandler:
             data["success"] = True
             data["message"] = u"Entry %s updated from %s"%(ip, zone[0])
         except Exception, e:
-            errormsg = u"Unsuccessful database update transaction"
+            errormsg = u"Unsuccessful database update transaction:" + e
             log.exception(errormsg, self.__class__.__name__)
             data["success"] = False
             data["error"] = errormsg
@@ -101,8 +108,8 @@ class DNSHandler:
         zone = list(c.execute("""
             SELECT name FROM zones
             WHERE name LIKE ?
-            """,[name]))[0]
-        if zone[0] == name:
+            """,[name]))
+        if len(zone) > 0 and zone[0][0] == name:
             try:
                 c.execute("""
                     UPDATE zones
@@ -113,13 +120,13 @@ class DNSHandler:
                 data["success"] = True
                 data["message"] = u"Entry %s deleted"%(name)
             except Exception, e:
-                errormsg = u"Unsuccessful database delete transaction"
+                errormsg = u"Unsuccessful database delete transaction:" + e
                 log.exception(errormsg, self.__class__.__name__)
                 data["success"] = False
                 data["error"] = errormsg
         else:
             data["success"] = False
-            data["message"] = u"Entry %s not found"%(name)
+            data["error"] = u"Entry %s not found"%(name)
         return data
 
     def getAllEntries(self):
