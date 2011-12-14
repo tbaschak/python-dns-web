@@ -44,7 +44,8 @@ class DNSTest(unittest.TestCase):
         assert result["success"] == False
         # Test update
         result = self.dh.editIp("olavtest2", "192.168.1.2")
-        assert result["message"] == u"Entry 192.168.1.2 updated from 192.168.1.1"
+        msg = u"Entry 192.168.1.2 updated from 192.168.1.1"
+        assert result["message"] == msg
         assert result["success"] == True
         
         # Test delete

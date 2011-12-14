@@ -23,13 +23,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import os, sys
+import inspect
 from base import app
 import logging
 from service.kronos import ThreadedScheduler
 from service.kronos import method
 from service.dnshandler import DNSHandler
 import unittest
-from test.dns_test import DNSTest
+#from test.dns_test import DNSTest
+import test.dns_test
 
 for controller in os.listdir(os.getcwd()+"/controllers"):
     module_name, ext = os.path.splitext(controller)
@@ -47,8 +49,7 @@ class MainApplication:
                 # Delete db if it exists
                 if os.path.isfile(app.config["DBFILE"]):
                     os.remove(app.config["DBFILE"])
-                suite = unittest.TestLoader().loadTestsFromTestCase(DNSTest)
-                unittest.TextTestRunner(verbosity=2).run(suite)
+                MainApplication.findTests()
                 return 1
         if len(sys.argv) == 1 or sys.argv[1] == "prod" or None:
             app.config.from_object('base.config.ProductionConfig')
@@ -69,6 +70,21 @@ class MainApplication:
             dnshandler.zonefileJob, "job1",
             0, 30, method.threaded, None, None)
         job.start()
+        
+    @staticmethod
+    def findTests():
+        for testclass in os.listdir(os.getcwd()+"/test"):
+            m_name, ext = os.path.splitext(testclass)
+            if m_name.endswith('_test') and ext == '.py':
+                module = __import__("test.%s" % (m_name),fromlist = ["*"])
+                classes = inspect.getmembers(module, inspect.isclass)
+                for name, obj in classes:
+                    if name.endswith("Test"):
+                        MainApplication.loadTest(obj)
+    @staticmethod
+    def loadTest(obj):
+        suite = unittest.TestLoader().loadTestsFromTestCase(obj)
+        unittest.TextTestRunner(verbosity=2).run(suite)
 
 if __name__ == "__main__":
     MainApplication.start()
