@@ -3,19 +3,28 @@ from base import app, log
 from model.zoneentry import ZoneEntry
 from service.dbhandler import DBHandler
 import traceback
+import fileinput
+import sys
 
 class DNSHandler:
     
     def __init__(self):
         self.zonefile = None
+        self.tempfile = None
+        self.serial = [";Serial", "; Serial"]
         
     def __del__(self):
         if self.zonefile is not None:
             self.zonefile.close()
+        if self.tempfile is not None:
+            self.tempfile.close()
         
     def readZonefile(self):
         self.zonefile = open(app.config["ZONEFILE"],"r")
         self.lines = self.zonefile.readlines()
+        
+    def createTempFile(self):
+        self.tempfile = open("tempzonefile","w")
         
     def add(self, name, ip):
         data = {}
@@ -143,6 +152,12 @@ class DNSHandler:
             if line.find(app.config["ZONES_START_POINT"]) >= 0:
                 printLines = True
         return data
+    
+    def convertResults(self,results):
+        data = []
+        for row in results:
+            data.append(ZoneEntry(row[0],row[1],row[2]))
+        return data
         
     def getEntryByName(self, name):
         return data
@@ -151,32 +166,46 @@ class DNSHandler:
         db = DBHandler(app.config["DBFILE"])
         c = db.getCursor()
         results = list(c.execute("""
-            SELECT name, ip FROM zones
+            SELECT name, ip, update_type FROM zones
             WHERE updated = 1
             """,[]))
         if len(results) > 0:
-            self.updateZonefile(results)
+            self.updateZonefile(self.convertResults(results))
         pass
     
-    def updateZonefile(self, results):
+    def updateZonefile(self, zones):
         self.readZonefile()
-        zones = self.getAllEntries()
+        self.createTempFile()
+        zoneEntries = self.getAllEntries()
         for zone in zones:
-            #print zone.name
-            #print zone.ip
-            pass
-        for row in results:
-            # Check if name exists
-            
-            pass
-            # Should ip be changed?
-            
-            # Add entry
-        
-    def getSerial(self):
-        serial = [";Serial", "; Serial"]
+            if zone.updateType == "CREATE":
+                self.addZone(zone)
+            elif "MODIFIED" in zone.updateType:
+                self.editZone(zone)
+            elif zone.updateType == "DELETE":
+                self.deleteZone(zone)
+                
+    def addZone(self, zone):
         for line in self.lines:
-            for s in serial:
+            if app.config["ZONES_END_POINT"] in line:
+                newline = "%s\t\tIN\tA\t\t%s\n"%(zone.name,zone.ip)
+                self.tempfile.write(newline)
+            self.tempfile.write(line)
+        
+    def updateZone(self):
+        for line in self.lines:
+            if zone.updateType == "MODIFIED NAME":
+                if zone.name in line:
+                    newline = "%s\t\tIN\tA\t\t%s\n"%(zone.name,zone.ip)
+                    self.tempfile.write(newline)
+            self.tempfile.write(line)
+    
+    def deleteZone(self):
+        pass
+
+    def getSerial(self):
+        for line in self.lines:
+            for s in self.serial:
                 if line.find(s) or line.find(s.lower) or line.find(s.upper):
                     print line
                     return line
