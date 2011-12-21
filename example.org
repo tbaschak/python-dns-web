@@ -1,7 +1,7 @@
 ; $FreeBSD: src/etc/namedb/master/localhost-forward.db,v 1.1.12.1.2.1 2009/10/25 01:10:29 kensmith Exp $
 $ORIGIN backupbay.com.
 $TTL 60
-@               IN      SOA        ns1.backupbay.com.       admin.example.org. (
+@               IN      SOA        ns1.example.org.       admin.example.org. (
 2011090608;Serial
 3600 ; Refresh
 3600 ; Retry
