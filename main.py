@@ -28,7 +28,7 @@ from base import app
 import logging
 from service.kronos import ThreadedScheduler
 from service.kronos import method
-from service.dnshandler import DNSHandler
+from service.dnsfilehandler import DNSFileHandler
 import unittest
 #from test.dns_test import DNSTest
 import test.dns_test
@@ -64,7 +64,7 @@ class MainApplication:
     
     @staticmethod
     def initJob1():
-        dnshandler = DNSHandler()
+        dnshandler = DNSFileHandler()
         job = ThreadedScheduler()
         job.add_interval_task(
             dnshandler.zonefileJob, "job1",

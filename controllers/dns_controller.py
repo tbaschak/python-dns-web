@@ -16,15 +16,15 @@ class DNSController:
     def add():
         data = {}
         msgs = Messages()
-        ip = request.args.get('ip')
-        if not ip:
-            msgs.add(u"no ip address supplied")
+        host = request.args.get('host')
+        if not host:
+            msgs.add(u"no host address supplied")
         name = request.args.get('name')
         if not name:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
             dns = DNSHandler()
-            data = dns.add(name, ip)
+            data = dns.add(name, host)
         else:
             data["errors"] = msgs
         if data.has_key("error") or data.has_key("errors"):
@@ -37,7 +37,7 @@ class DNSController:
         msgs = Messages()
         fromName = request.args.get('from')
         if not fromName:
-            msgs.add(u"no ip address supplied")
+            msgs.add(u"no from name supplied")
         toName = request.args.get('to')
         if not toName:
             msgs.add(u"no name supplied")
@@ -51,18 +51,18 @@ class DNSController:
         return asJSON(data)
         
     @app.route("/dns/editIp", methods=['GET', 'POST'])
-    def editIp():
+    def editHost():
         data = {}
         msgs = Messages()
-        ip = request.args.get('ip')
-        if not ip:
-            msgs.add(u"no ip address supplied")
+        host = request.args.get('host')
+        if not host:
+            msgs.add(u"no host address supplied")
         name = request.args.get('name')
         if not name:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
             dns = DNSHandler()
-            data = dns.editIp(name, ip)
+            data = dns.editHost(name, host)
         else:
             data["errors"] = msgs
         if data.has_key("error") or data.has_key("errors"):

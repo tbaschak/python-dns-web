@@ -4,16 +4,17 @@ from pysqlite2 import dbapi2 as sqlite3
 class DBHandler:
     
     def __init__(self, dbname):
-        self.connection = sqlite3.connect(dbname)
+        self.connection = sqlite3.connect(dbname,check_same_thread = False)
         self.cursor = self.connection.cursor()
         self.connection.row_factory = sqlite3.Row
         self.execute("""
             create table if not exists
             zones(
                 name varchar NOT NULL,
-                ip varchar NOT NULL,
+                host varchar NOT NULL,
                 updated boolean NOT NULL,
-                update_type varchar
+                update_type varchar,
+                old_value varchar
             )
         """)
             

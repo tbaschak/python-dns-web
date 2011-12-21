@@ -39,11 +39,11 @@ class DNSTest(unittest.TestCase):
         
         # Edit ip
         # Test duplicate
-        result = self.dh.editIp("olavtest2", "192.168.1.1")
-        assert result["error"] == u"Ip entry is the same as existing name"
+        result = self.dh.editHost("olavtest2", "192.168.1.1")
+        assert result["error"] == u"Host entry is the same as existing name"
         assert result["success"] == False
         # Test update
-        result = self.dh.editIp("olavtest2", "192.168.1.2")
+        result = self.dh.editHost("olavtest2", "192.168.1.2")
         msg = u"Entry 192.168.1.2 updated from 192.168.1.1"
         assert result["message"] == msg
         assert result["success"] == True

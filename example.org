@@ -1,0 +1,40 @@
+; $FreeBSD: src/etc/namedb/master/localhost-forward.db,v 1.1.12.1.2.1 2009/10/25 01:10:29 kensmith Exp $
+$ORIGIN backupbay.com.
+$TTL 60
+@               IN      SOA        ns1.backupbay.com.       admin.example.org. (
+2011090608;Serial
+3600 ; Refresh
+3600 ; Retry
+3600000 ; Expire
+3600 ; Minimum
+)
+; Serial, Refresh, Retry, Expire, Neg. cache TTL
+
+; DNS Servers
+            	IN      NS	   	ns1.example.org.
+            	IN      NS	   	ns2.example.org.
+; MX Records	
+                IN      MX 1            ASPMX.L.GOOGLE.COM.
+                IN      MX 5            ALT1.ASPMX.L.GOOGLE.COM.
+                IN      MX 5            ALT2.ASPMX.L.GOOGLE.COM.
+                IN      MX 10           ASPMX2.GOOGLEMAIL.COM.
+                IN      MX 10           ASPMX3.GOOGLEMAIL.COM.
+
+;		IN	MX 10		mx.example.org.
+;Machine Names
+example.org.   IN      A           	89.1.1.1
+ns1   		IN      A           	89.1.1.1
+ns2   		IN      A           	89.1.1.2
+dns             IN      A           	192.168.1.212
+beta		IN	A		192.168.1.250
+bugs		IN	A		192.168.1.240
+help		IN	A		192.168.1.240
+
+; Aliases
+www             IN      CNAME      	example.org.
+
+;zones start
+olav		IN	A	beta.example.org.
+olekjormo	IN	A	beta
+hakon		IN	A	192.168.1.140
+;zones end
