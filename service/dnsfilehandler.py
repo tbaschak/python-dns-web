@@ -31,11 +31,11 @@ class DNSFileHandler:
     def moveZoneFile(self):
         os.rename( "tempzonefile", app.config["ZONEFILE"] )
         
-    def getAllEntries(self):
+    def getAllEntries(self, lines):
         # return all entries found in the zone file
         data = []
         printLines = False
-        for line in self.lines:
+        for line in lines:
             if line.find(app.config["ZONES_END_POINT"]) >= 0:
                 printLines = False
             if printLines:
@@ -58,10 +58,8 @@ class DNSFileHandler:
         self.readZonefile()
     
     def updateZonefile(self, zones):
-        print "executing zone update"
         self.readZonefile()
         self.createTempFile()
-        zoneEntries = self.getAllEntries()
         for zone in zones:
             self.templines = []
             if zone.updateType == "CREATE":
@@ -85,7 +83,7 @@ class DNSFileHandler:
             if app.config["ZONES_END_POINT"] in line:
                 # Check if ip address or hostname
                 try:
-                    socket.inet_aton(addr)
+                    socket.inet_aton(zone.host)
                     newline = "%s\tIN\tA\t%s\n"%(zone.name,zone.host)
                 except:
                     newline = "%s\tIN\tCNAME\t%s\n"%(
@@ -107,33 +105,47 @@ class DNSFileHandler:
             except Exception, e:
                 errormsg = u"Unsuccessful database update transaction:" + str(e)
                 log.exception(errormsg, self.__class__.__name__)
-        
+                        
     def updateZone(self, zone):
         checkZoneName = False
-        updated = False
+        updatedName = False
+        updatedHost = False
         for line in self.lines:
             if app.config["ZONES_END_POINT"] in line:
                 checkZoneName = False
             if app.config["ZONES_START_POINT"] in line:
                 checkZoneName = True
             if zone.updateType == "MODIFIED NAME":
-                if checkZoneName is True and zone.old_value in line:
+                if checkZoneName is True and zone.old_value == line.split()[0]:
                     # This will remove duplicates
-                    if not updated:
+                    if not updatedName:
                         # Check if ip address or hostname
                         try:
-                            socket.inet_aton(addr)
+                            socket.inet_aton(zone.host)
                             newline = "%s\tIN\tA\t%s\n"%(zone.name,zone.host)
                         except:
                             newline = "%s\tIN\tCNAME\t%s\n"%(
                                 zone.name,zone.host)
                         self.templines.append(newline)
-                        updated = True
+                        updatedName = True
                 else:
                     self.templines.append(line)
             elif zone.updateType == "MODIFIED HOST":
-                pass
-        if updated:
+                if checkZoneName is True and zone.name in line.split()[0]:
+                    # This will remove duplicates
+                    if not updatedHost:
+                        # Check if ip address or hostname
+                        try:
+                            socket.inet_aton(zone.host)
+                            newline = "%s\tIN\tA\t%s\n"%(zone.name,zone.host)
+                        except:
+                            newline = "%s\tIN\tCNAME\t%s\n"%(
+                                zone.name,zone.host)
+                        self.templines.append(newline)
+                        updatedHost = True
+                else:
+                    self.templines.append(line)
+        if updatedName:
             try:
                 self.c.execute("""
                     UPDATE zones
@@ -142,7 +154,18 @@ class DNSFileHandler:
                     """,[zone.name, zone.old_value])
                 self.db.commit()
             except Exception, e:
-                errormsg = u"Unsuccessful database update transaction:" + e
+                errormsg = u"Unsuccessful database update transaction:" + str(e)
+                log.exception(errormsg, self.__class__.__name__)
+        if updatedHost:
+            try:
+                self.c.execute("""
+                    UPDATE zones
+                    SET updated = 0, update_type = NULL, host = ?
+                    WHERE name LIKE ?
+                    """,[zone.host, zone.name])
+                self.db.commit()
+            except Exception, e:
+                errormsg = u"Unsuccessful database update transaction:" + str(e)
                 log.exception(errormsg, self.__class__.__name__)
     
     def deleteZone(self,zone):
@@ -167,7 +190,7 @@ class DNSFileHandler:
                     """,[zone.name])
                 self.db.commit()
             except Exception, e:
-                errormsg = u"Unsuccessful database delete transaction:" + e
+                errormsg = u"Unsuccessful database delete transaction:" + str(e)
                 log.exception(errormsg, self.__class__.__name__)
                 
     def convertResults(self,results):

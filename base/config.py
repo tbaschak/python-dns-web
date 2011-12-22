@@ -21,4 +21,5 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     DBFILE = "zonestest.db"
+    ZONEFILE = "testexample.org"
 
