@@ -83,7 +83,7 @@ class DNSTest(unittest.TestCase):
         for line in self.dfh.lines:
             if u"olavfiletest\tIN\tA\t192.168.1.1\n" == line:
                 lineFound[0] = True
-            if u"olavfiletest2\tIN\tCNAME\ttest.example.org\n" == line:
+            if u"olavfiletest2\tIN\tCNAME\ttest.example.org.\n" == line:
                 lineFound[1] = True
                 
         for status in lineFound:
@@ -103,7 +103,7 @@ class DNSTest(unittest.TestCase):
         for line in self.dfh.lines:
             if u"olavfiletest3\tIN\tA\t192.168.1.1\n" == line:
                 lineFound[0] = True
-            if u"olavfiletest4\tIN\tCNAME\ttest.example.org\n" == line:
+            if u"olavfiletest4\tIN\tCNAME\ttest.example.org.\n" == line:
                 lineFound[1] = True
                 
         for status in lineFound:
@@ -121,7 +121,7 @@ class DNSTest(unittest.TestCase):
         
         lineFound = [False,False]
         for line in self.dfh.lines:
-            if u"olavfiletest3\tIN\tCNAME\ttest.example.org\n" == line:
+            if u"olavfiletest3\tIN\tCNAME\ttest.example.org.\n" == line:
                 lineFound[0] = True
             if u"olavfiletest4\tIN\tA\t192.168.1.2\n" == line:
                 lineFound[1] = True

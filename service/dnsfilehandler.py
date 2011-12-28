@@ -86,6 +86,8 @@ class DNSFileHandler:
                     socket.inet_aton(zone.host)
                     newline = "%s\tIN\tA\t%s\n"%(zone.name,zone.host)
                 except:
+                    if not zone.host[:-1] == ".":
+                        zone.host = zone.host + "."
                     newline = "%s\tIN\tCNAME\t%s\n"%(
                         zone.name,zone.host)
                 self.templines.insert(i, newline)
@@ -124,6 +126,8 @@ class DNSFileHandler:
                             socket.inet_aton(zone.host)
                             newline = "%s\tIN\tA\t%s\n"%(zone.name,zone.host)
                         except:
+                            if not zone.host[:-1] == ".":
+                                zone.host = zone.host + "."
                             newline = "%s\tIN\tCNAME\t%s\n"%(
                                 zone.name,zone.host)
                         self.templines.append(newline)
@@ -139,6 +143,8 @@ class DNSFileHandler:
                             socket.inet_aton(zone.host)
                             newline = "%s\tIN\tA\t%s\n"%(zone.name,zone.host)
                         except:
+                            if not zone.host[:-1] == ".":
+                                zone.host = zone.host + "."
                             newline = "%s\tIN\tCNAME\t%s\n"%(
                                 zone.name,zone.host)
                         self.templines.append(newline)
