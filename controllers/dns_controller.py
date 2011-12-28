@@ -1,5 +1,6 @@
 from base import app, asJSON, Messages
 from service.dnshandler import DNSHandler
+from base.security import withPassword
 from flask import request
 
 class DNSController:
