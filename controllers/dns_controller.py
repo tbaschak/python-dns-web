@@ -4,8 +4,9 @@ from base.security import withPassword
 from flask import request
 
 class DNSController:
-    @withPassword
+
     @app.route("/dns/list", methods=['GET', 'POST'])
+    @withPassword
     def list():
         data = {}
         dns = DNSHandler()
@@ -14,8 +15,8 @@ class DNSController:
             data["success"] = True
         return asJSON(data)
         
-    @withPassword
     @app.route("/dns/add", methods=['GET', 'POST'])
+    @withPassword
     def add():
         data = {}
         msgs = Messages()
@@ -34,8 +35,8 @@ class DNSController:
             data["success"] = False
         return asJSON(data)
         
-    @withPassword
     @app.route("/dns/editName", methods=['GET', 'POST'])
+    @withPassword
     def editName():
         data = {}
         msgs = Messages()
@@ -54,8 +55,8 @@ class DNSController:
             data["success"] = False
         return asJSON(data)
         
-    @withPassword
     @app.route("/dns/editIp", methods=['GET', 'POST'])
+    @withPassword
     def editHost():
         data = {}
         msgs = Messages()
@@ -74,8 +75,8 @@ class DNSController:
             data["success"] = False
         return asJSON(data)
         
-    @withPassword
     @app.route("/dns/delete", methods=['GET', 'POST'])
+    @withPassword
     def delete():
         data = {}
         msgs = Messages()
