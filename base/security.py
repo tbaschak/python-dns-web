@@ -6,7 +6,6 @@ def withPassword(f):
     @wraps(f)
     def checkPassword(*args, **kwargs):
         # Check HTTP Header
-        print request.headers.keys()
         if request.headers.has_key("Authtoken"):
             request.headers.get("Authtoken") == app.config["AUTHPASS"]
             return f(*args, **kwargs)

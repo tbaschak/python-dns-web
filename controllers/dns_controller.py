@@ -3,6 +3,7 @@ from service.dnshandler import DNSHandler
 from flask import request
 
 class DNSController:
+    @withPassword
     @app.route("/dns/list", methods=['GET', 'POST'])
     def list():
         data = {}
@@ -12,6 +13,7 @@ class DNSController:
             data["success"] = True
         return asJSON(data)
         
+    @withPassword
     @app.route("/dns/add", methods=['GET', 'POST'])
     def add():
         data = {}
@@ -31,6 +33,7 @@ class DNSController:
             data["success"] = False
         return asJSON(data)
         
+    @withPassword
     @app.route("/dns/editName", methods=['GET', 'POST'])
     def editName():
         data = {}
@@ -50,6 +53,7 @@ class DNSController:
             data["success"] = False
         return asJSON(data)
         
+    @withPassword
     @app.route("/dns/editIp", methods=['GET', 'POST'])
     def editHost():
         data = {}
@@ -69,17 +73,7 @@ class DNSController:
             data["success"] = False
         return asJSON(data)
         
-    @app.route("/dns/save", methods=['GET', 'POST'])
-    def save():
-        data = {}
-        return asJSON(data)
-        
-    @app.route("/dns/get", methods=['GET', 'POST'])
-    def get():
-        data = {}
-        dns = DNSHandler()
-        return asJSON(data)
-        
+    @withPassword
     @app.route("/dns/delete", methods=['GET', 'POST'])
     def delete():
         data = {}
