@@ -34,7 +34,7 @@ import unittest
 for controller in os.listdir(os.getcwd()+"/controllers"):
     module_name, ext = os.path.splitext(controller)
     if module_name.endswith('_controller') and ext == '.py':
-        module = __import__("controllers.%s" % (module_name))
+        __import__("controllers.%s" % (module_name))
 
 class MainApplication:
     @staticmethod
