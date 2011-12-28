@@ -30,8 +30,6 @@ from service.kronos import ThreadedScheduler
 from service.kronos import method
 from service.dnsfilehandler import DNSFileHandler
 import unittest
-#from test.dns_test import DNSTest
-import test.dns_test
 
 for controller in os.listdir(os.getcwd()+"/controllers"):
     module_name, ext = os.path.splitext(controller)
