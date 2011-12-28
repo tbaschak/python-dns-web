@@ -6,6 +6,7 @@ import fileinput
 import sys
 import os
 import socket
+from subprocess import call
     
 class DNSFileHandler:
     
@@ -45,6 +46,9 @@ class DNSFileHandler:
             if line.find(app.config["ZONES_START_POINT"]) >= 0:
                 printLines = True
         return data
+    
+    def reloadBind(self):
+        print call(app.config["BIND_RELOAD_CMD"], shell=True)
         
     def zonefileJob(self):
         self.db = DBHandler(app.config["DBFILE"])
@@ -76,6 +80,7 @@ class DNSFileHandler:
             self.tempfile.write(line)
         self.tempfile.close()
         self.moveZoneFile()
+        self.reloadBind()
                 
     def addZone(self, zone):
         added = False

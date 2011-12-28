@@ -10,6 +10,7 @@ class Config(object):
     DBFILE = "zones.db"
     ZONES_START_POINT = ";zones start"
     ZONES_END_POINT = ";zones end"
+    BIND_RELOAD_CMD = "/etc/rc.d/named reload"
 
 class ProductionConfig(Config):
     pass
