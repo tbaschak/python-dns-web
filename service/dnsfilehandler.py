@@ -48,7 +48,9 @@ class DNSFileHandler:
         return data
     
     def reloadBind(self):
-        print call(app.config["BIND_RELOAD_CMD"], shell=True)
+        if call(app.config["BIND_RELOAD_CMD"], shell=True) != 0:
+            errormsg = u"Couldn't reload BIND."
+            log.exception(errormsg, self.__class__.__name__)
         
     def zonefileJob(self):
         self.db = DBHandler(app.config["DBFILE"])
@@ -59,7 +61,6 @@ class DNSFileHandler:
             """,[]))
         if len(results) > 0:
             self.updateZonefile(self.convertResults(results))
-        self.readZonefile()
     
     def updateZonefile(self, zones):
         self.readZonefile()
