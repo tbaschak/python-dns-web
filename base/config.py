@@ -1,8 +1,8 @@
 class Config(object):
-    DEBUG = False
+    DEBUG = True
     TESTING = False
     HOST = "0.0.0.0"
-    PORT = 8080
+    PORT = 28080
     LOGFILE = 'stacktrace.log'
     JSONfile = True
     AUTHPASS = "httppassword"

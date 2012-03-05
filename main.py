@@ -19,7 +19,7 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
 FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+CONNECTION WITH THE SOFTWARE OR THEal USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 import os, sys
@@ -42,24 +42,28 @@ class MainApplication:
         if len(sys.argv) > 1:
             if sys.argv[1] == ("dev"):
                 app.config.from_object('base.config.DevelopmentConfig')
+                MainApplication.initJob1()
+                app.run(
+                    app.config["HOST"],
+                    app.config["PORT"]
+                )
             elif sys.argv[1] == "test":
                 app.config.from_object('base.config.TestingConfig')
                 # Delete db if it exists
                 if os.path.isfile(app.config["DBFILE"]):
                     os.remove(app.config["DBFILE"])
                 MainApplication.findTests()
+                MainApplication.initJob1()
+                app.run(
+                    app.config["HOST"],
+                    app.config["PORT"]
+                )
                 return 1
         if len(sys.argv) == 1 or sys.argv[1] == "prod" or None:
             app.config.from_object('base.config.ProductionConfig')
-        logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)
-        # start job
-        MainApplication.initJob1()
-        app.run(
-            app.config["HOST"],
-            app.config["PORT"]
-        )
+            MainApplication.initJob1()
+            logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)
         
-    
     @staticmethod
     def initJob1():
         dnshandler = DNSFileHandler()
