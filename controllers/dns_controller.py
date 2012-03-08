@@ -55,7 +55,7 @@ class DNSController:
             data["success"] = False
         return asJSON(data)
         
-    @app.route("/dns/editIp", methods=['GET', 'POST'])
+    @app.route("/dns/editHost", methods=['GET', 'POST'])
     @withPassword
     def editHost():
         data = {}
