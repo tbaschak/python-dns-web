@@ -2,6 +2,7 @@ from flask import Flask, request
 import json
 from config import Config
 import sys
+from traceback import print_exception
 
 class Base:
     app = Flask(__name__.split('.')[0])
@@ -9,10 +10,10 @@ class Base:
     
     @app.errorhandler(500)
     def error_500(e):
-        from traceback import print_exception
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        with open('/tmp/dns.log', 'a') as f:
-            print_exception(exc_type, exc_value, exc_traceback, file=f)
+        #with open('/tmp/dns.log', 'a') as f:
+            #print_exception(exc_type, exc_value, exc_traceback, file=f)
+        Log.exception("Something went really wrong:")
         return 'HTTP 500'
     
     @staticmethod
