@@ -74,10 +74,16 @@ class DNSHandler:
         data = {}
         db = DBHandler(app.config["DBFILE"])
         c = db.getCursor()
-        zone = list(c.execute("""
+        dbdata = list(c.execute("""
             SELECT host FROM zones
             WHERE name LIKE ?
-            """,[name]))[0]
+            """,[name]))
+        if len(dbdata) == 0:
+            data["error"] = u"Zone doesn't exist"
+            data["success"] = False
+            return data
+        else:
+            zone = dbdata[0]
         if zone[0] == host:
             data["error"] = u"Host entry is the same as existing name"
             data["success"] = False

@@ -73,10 +73,10 @@ class DNSFileHandler:
                 self.updateZone(zone)
             elif zone.updateType == "DELETE":
                 self.deleteZone(zone)
+            app.logger.info(zone.updateType+" zone: "+str(zone.name))
             for item in ["CREATE", "MODIFIED", "DELETE"]:
                 if item in zone.updateType:
                     self.lines = list(self.templines)
-            app.logger.info(item+" zone: "+str(zone.name))
         self.updateSerial()
         for line in self.lines:
             self.tempfile.write(line)
