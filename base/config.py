@@ -2,8 +2,8 @@ class Config(object):
     DEBUG = True
     TESTING = False
     HOST = "0.0.0.0"
-    PORT = 28080
-    LOGFILE = 'stacktrace.log'
+    PORT = 8080
+    LOGFILE = '/var/log/p_dns_ws.log'
     JSONfile = True
     AUTHPASS = "httppassword"
     ZONEFILE = "example.org"

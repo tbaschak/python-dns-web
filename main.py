@@ -42,27 +42,20 @@ class MainApplication:
         if len(sys.argv) > 1:
             if sys.argv[1] == ("dev"):
                 app.config.from_object('base.config.DevelopmentConfig')
-                MainApplication.initJob1()
-                app.run(
-                    app.config["HOST"],
-                    app.config["PORT"]
-                )
             elif sys.argv[1] == "test":
                 app.config.from_object('base.config.TestingConfig')
                 # Delete db if it exists
                 if os.path.isfile(app.config["DBFILE"]):
                     os.remove(app.config["DBFILE"])
                 MainApplication.findTests()
-                MainApplication.initJob1()
-                app.run(
-                    app.config["HOST"],
-                    app.config["PORT"]
-                )
-                return 1
         if len(sys.argv) == 1 or sys.argv[1] == "prod" or None:
             app.config.from_object('base.config.ProductionConfig')
-            MainApplication.initJob1()
-            logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)
+        MainApplication.initJob1()
+        logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)
+        app.run(
+            app.config["HOST"],
+            app.config["PORT"]
+        )
         
     @staticmethod
     def initJob1():
