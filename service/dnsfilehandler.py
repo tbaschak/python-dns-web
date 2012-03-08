@@ -30,7 +30,7 @@ class DNSFileHandler:
         self.tempfile = open(app.config["TEMPZONEFILE"],"w")
         
     def moveZoneFile(self):
-        os.rename( "tempzonefile", app.config["ZONEFILE"] )
+        os.rename(app.config["TEMPZONEFILE"], app.config["ZONEFILE"] )
         
     def getAllEntries(self, lines):
         # return all entries found in the zone file
