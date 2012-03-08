@@ -116,7 +116,7 @@ class DNSHandler:
             try:
                 c.execute("""
                     UPDATE zones
-                    SET update_type = 'DELETE'
+                    SET updated = 1, update_type = 'DELETE'
                     WHERE name LIKE ?
                     """,[name])
                 db.commit()
