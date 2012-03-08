@@ -28,7 +28,7 @@ Use this to launch with uwsgi.
 
 import os, sys
 import inspect
-from base import app
+from base import app, log
 import logging
 from service.kronos import ThreadedScheduler
 from service.kronos import method
@@ -42,12 +42,15 @@ for controller in os.listdir(os.getcwd()+"/controllers"):
 
        
 def initJob1():
-    dnshandler = DNSFileHandler()
-    job = ThreadedScheduler()
-    job.add_interval_task(
-        dnshandler.zonefileJob, "job1",
-        0, 30, method.threaded, None, None)
-    job.start()
+    try:
+        dnshandler = DNSFileHandler()
+        job = ThreadedScheduler()
+        job.add_interval_task(
+            dnshandler.zonefileJob, "job1",
+            0, 30, method.threaded, None, None)
+        job.start()
+    except Exception as e:
+        log.exception("Job error")
 
 app.config.from_object('base.config.ProductionConfig')
 logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)
