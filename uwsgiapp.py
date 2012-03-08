@@ -30,31 +30,22 @@ import os, sys
 import inspect
 from base import app, log
 import logging
-from service.kronos import ThreadedScheduler
-from service.kronos import method
 from service.dnsfilehandler import DNSFileHandler
-import unittest
+from uwsgidecorators import *
+
 
 for controller in os.listdir(os.getcwd()+"/controllers"):
     module_name, ext = os.path.splitext(controller)
     if module_name.endswith('_controller') and ext == '.py':
         __import__("controllers.%s" % (module_name))
-
-       
-def initJob1():
-    try:
-        dnshandler = DNSFileHandler()
-        job = ThreadedScheduler()
-        job.add_interval_task(
-            dnshandler.zonefileJob, "job1",
-            0, 30, method.threaded, None, None)
-        job.start()
-    except Exception as e:
-        log.exception("Job error")
+        
+@timer(30, target='spooler')
+def job1(signum):
+    dnshandler = DNSFileHandler()
+    dnshandler.zonefileJob()
 
 app.config.from_object('base.config.ProductionConfig')
 logging.basicConfig(filename=app.config["LOGFILE"],level=logging.DEBUG)
-initJob1()
 
 
 

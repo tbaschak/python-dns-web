@@ -76,6 +76,7 @@ class DNSFileHandler:
             for item in ["CREATE", "MODIFIED", "DELETE"]:
                 if item in zone.updateType:
                     self.lines = list(self.templines)
+        app.logger.info(str(zones))
         self.updateSerial()
         for line in self.lines:
             self.tempfile.write(line)
