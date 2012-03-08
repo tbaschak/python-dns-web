@@ -31,7 +31,7 @@ class DNSHandler:
                 data["success"] = True
                 data["message"] = u"Entry %s inserted"%(name)
             except Exception, e:
-                errormsg = u"Unsuccessful database insert transaction:" + e
+                errormsg = u"Unsuccessful database insert transaction:\n" + str(e)
                 log.exception(errormsg, self.__class__.__name__)
                 data["success"] = False
                 data["error"] = errormsg
@@ -64,7 +64,7 @@ class DNSHandler:
             data["success"] = True
             data["message"] = u"Entry %s updated from %s"%(toName, fromName)
         except Exception, e:
-            errormsg = u"Unsuccessful database update transaction:" + e
+            errormsg = u"Unsuccessful database update transaction:\n" + str(e)
             log.exception(errormsg, self.__class__.__name__)
             data["success"] = False
             data["error"] = errormsg
@@ -92,7 +92,7 @@ class DNSHandler:
             data["success"] = True
             data["message"] = u"Entry %s updated from %s"%(host, zone[0])
         except Exception, e:
-            errormsg = u"Unsuccessful database update transaction:" + e
+            errormsg = u"Unsuccessful database update transaction:\n" + str(e)
             log.exception(errormsg, self.__class__.__name__)
             data["success"] = False
             data["error"] = errormsg
@@ -117,7 +117,7 @@ class DNSHandler:
                 data["success"] = True
                 data["message"] = u"Entry %s deleted"%(name)
             except Exception, e:
-                errormsg = u"Unsuccessful database delete transaction:" + e
+                errormsg = u"Unsuccessful database delete transaction:\n" + str(e)
                 log.exception(errormsg, self.__class__.__name__)
                 data["success"] = False
                 data["error"] = errormsg
