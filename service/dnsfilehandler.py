@@ -27,7 +27,7 @@ class DNSFileHandler:
         return self.lines
         
     def createTempFile(self):
-        self.tempfile = open("tempzonefile","w")
+        self.tempfile = open(app.config["TEMPZONEFILE"],"w")
         
     def moveZoneFile(self):
         os.rename( "tempzonefile", app.config["ZONEFILE"] )
