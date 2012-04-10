@@ -20,12 +20,16 @@ class DNSController:
     def add():
         data = {}
         msgs = Messages()
-        host = request.values['host']
-        if not host:
+        if not request.values.has_key('host'):
             msgs.add(u"no host address supplied")
-        name = request.values['name']
-        if not name:
+            data["errors"] = msgs
+            return asJSON(data)
+        host = request.values['host']
+        if not request.values.has_key('name'):
             msgs.add(u"no name supplied")
+            data["errors"] = msgs
+            return asJSON(data)
+        name = request.values['name']
         if not len(msgs.getAll()) > 0:
             dns = DNSHandler()
             data = dns.add(name, host)
@@ -40,12 +44,16 @@ class DNSController:
     def editName():
         data = {}
         msgs = Messages()
-        fromName = request.values['from']
-        if not fromName:
+        if not request.values.has_key('from'):
             msgs.add(u"no from name supplied")
-        toName = request.values['to']
-        if not toName:
+            data["errors"] = msgs
+            return asJSON(data)
+        fromName = request.values['from']
+        if not request.values.has_key('to'):
             msgs.add(u"no name supplied")
+            data["errors"] = msgs
+            return asJSON(data)
+        toName = request.values['to']
         if not len(msgs.getAll()) > 0:
             dns = DNSHandler()
             data = dns.editName(fromName, toName)
@@ -60,10 +68,16 @@ class DNSController:
     def editHost():
         data = {}
         msgs = Messages()
-        host = request.values['host']
-        if not host:
+        if not request.values.has_key('name'):
+            msgs.add(u"no name supplied")
+            data["errors"] = msgs
+            return asJSON(data)
+        if not request.values.has_key('host'):
             msgs.add(u"no host address supplied")
+            data["errors"] = msgs
+            return asJSON(data)
         name = request.values['name']
+        host = request.values['host']
         if not name:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
@@ -80,9 +94,11 @@ class DNSController:
     def delete():
         data = {}
         msgs = Messages()
-        name = request.values['name']
-        if not name:
+        if not request.values.has_key('name'):
             msgs.add(u"no name supplied")
+            data["errors"] = msgs
+            return asJSON(data)
+        name = request.values['name']
         if not len(msgs.getAll()) > 0:
             dns = DNSHandler()
             data = dns.delete(name)
