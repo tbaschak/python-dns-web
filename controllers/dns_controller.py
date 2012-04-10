@@ -20,10 +20,10 @@ class DNSController:
     def add():
         data = {}
         msgs = Messages()
-        host = request.args.get('host')
+        host = request.values['host']
         if not host:
             msgs.add(u"no host address supplied")
-        name = request.args.get('name')
+        name = request.values['name']
         if not name:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
@@ -40,10 +40,10 @@ class DNSController:
     def editName():
         data = {}
         msgs = Messages()
-        fromName = request.args.get('from')
+        fromName = request.values['from']
         if not fromName:
             msgs.add(u"no from name supplied")
-        toName = request.args.get('to')
+        toName = request.values['to']
         if not toName:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
@@ -60,10 +60,10 @@ class DNSController:
     def editHost():
         data = {}
         msgs = Messages()
-        host = request.args.get('host')
+        host = request.values['host']
         if not host:
             msgs.add(u"no host address supplied")
-        name = request.args.get('name')
+        name = request.values['name']
         if not name:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
@@ -80,7 +80,7 @@ class DNSController:
     def delete():
         data = {}
         msgs = Messages()
-        name = request.args.get('name')
+        name = request.values['name']
         if not name:
             msgs.add(u"no name supplied")
         if not len(msgs.getAll()) > 0:
