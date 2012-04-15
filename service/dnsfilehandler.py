@@ -183,7 +183,6 @@ class DNSFileHandler:
     
     def deleteZone(self,zone):
         checkZoneName = False
-        deleted = False
         for line in self.lines:
             if zone.updateType == "DELETE":
                 if app.config["ZONES_END_POINT"] in line:
@@ -192,19 +191,18 @@ class DNSFileHandler:
                     checkZoneName = True
                 if checkZoneName and zone.name in line:
                     # This will remove duplicates
-                    deleted = True
+                    continue
                 else:
                     self.templines.append(line)
-        if deleted:
-            try:
-                self.c.execute("""
-                    DELETE FROM zones
-                    WHERE name LIKE ?
-                    """,[zone.name])
-                self.db.commit()
-            except Exception, e:
-                errormsg = u"Unsuccessful database delete transaction:" + str(e)
-                log.exception(errormsg, self.__class__.__name__)
+        try:
+            self.c.execute("""
+                DELETE FROM zones
+                WHERE name LIKE ?
+                """,[zone.name])
+            self.db.commit()
+        except Exception, e:
+            errormsg = u"Unsuccessful database delete transaction:" + str(e)
+            log.exception(errormsg, self.__class__.__name__)
                 
     def convertResults(self,results):
         data = []
